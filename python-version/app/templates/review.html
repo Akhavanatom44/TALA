@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}صف تایید دستی{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-white">صف تایید دستی</h1>
+    <p class="mt-1 text-sm text-slate-400">وقتی «انتشار خودکار» غیرفعال باشد، پست‌های تاییدشده توسط Gemini اینجا منتظر تایید شما می‌مانند.</p>
+  </div>
+
+  <div class="space-y-4">
+    {% for item in items %}
+    {% set row = item.row %}
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="mb-3 flex items-center justify-between gap-2">
+        <span class="rounded-full bg-amber-500/15 px-2 py-1 text-xs text-amber-400">
+          {{ '🎮 فری‌فایر' if row.purpose == 'freefire' else '🪙 طلا' }} · {{ item.source_title }}
+          {% if row.media_type %} · رسانه: {{ row.media_type }}{% endif %}
+        </span>
+        <span class="text-xs text-slate-500">{{ row.created_at }}</span>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div>
+          <p class="mb-1 text-xs text-slate-500">متن اصلی:</p>
+          <p class="whitespace-pre-wrap rounded-lg bg-slate-950/60 p-3 text-sm text-slate-400">{{ row.original_text or '(بدون متن)' }}</p>
+        </div>
+        <div>
+          <p class="mb-1 text-xs text-slate-500">متن بازنویسی‌شده توسط Gemini:</p>
+          <p class="whitespace-pre-wrap rounded-lg bg-slate-950/60 p-3 text-sm text-white">{{ row.rewritten_text }}</p>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-3">
+        <form method="post" action="/admin/review/{{ row.id }}/approve">
+          <button class="rounded-lg bg-emerald-500/20 px-4 py-2 text-sm font-bold text-emerald-400 hover:bg-emerald-500/30">✅ تایید و انتشار</button>
+        </form>
+        <form method="post" action="/admin/review/{{ row.id }}/reject">
+          <button class="rounded-lg bg-rose-500/20 px-4 py-2 text-sm font-bold text-rose-400 hover:bg-rose-500/30">❌ رد کردن</button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <p class="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-500">چیزی در صف تایید وجود ندارد 🎉</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

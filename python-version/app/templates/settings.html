@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}تنظیمات{% endblock %}
+{% block content %}
+<div class="max-w-3xl space-y-8">
+  <div>
+    <h1 class="text-2xl font-bold text-white">تنظیمات ربات</h1>
+    <p class="mt-1 text-sm text-slate-400">توکن ربات تلگرام، کلید Gemini و تنظیمات کلی رفتار ربات را اینجا مدیریت کنید.</p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <form method="post" action="/admin/bot/test"><button class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 hover:bg-slate-700">🔌 تست اتصال ربات</button></form>
+    <form method="post" action="/admin/bot/webhook/enable"><button class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 hover:bg-slate-700">🔗 فعال‌سازی وب‌هوک</button></form>
+    <form method="post" action="/admin/bot/webhook/disable"><button class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 hover:bg-slate-700">🧹 حذف وب‌هوک</button></form>
+  </div>
+
+  <form method="post" action="/admin/settings" class="space-y-6 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+    <section class="space-y-4">
+      <h2 class="text-sm font-bold text-orange-400">اتصال به تلگرام</h2>
+      <label class="block space-y-1">
+        <span class="text-sm text-slate-300">توکن ربات تلگرام (از BotFather)</span>
+        <input name="bot_token" value="{{ settings.bot_token or '' }}" placeholder="123456789:AAExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+      </label>
+      <label class="block space-y-1">
+        <span class="text-sm text-slate-300">آدرس عمومی سایت (برای تنظیم وب‌هوک)</span>
+        <input name="public_base_url" value="{{ settings.public_base_url or '' }}" placeholder="https://your-domain.com"
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+      </label>
+      <p class="text-xs text-slate-500">وب‌هوک شما: <code class="text-slate-300">{آدرس بالا}/telegram/webhook</code></p>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-sm font-bold text-orange-400">هوش مصنوعی Gemini</h2>
+      <label class="block space-y-1">
+        <span class="text-sm text-slate-300">کلید API جمینای (Gemini API Key)</span>
+        <input name="gemini_api_key" value="{{ settings.gemini_api_key or '' }}" placeholder="AIza..."
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+      </label>
+      <label class="block space-y-1">
+        <span class="text-sm text-slate-300">مدل Gemini</span>
+        <input name="gemini_model" value="{{ settings.gemini_model or 'gemini-2.5-flash' }}"
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+      </label>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-sm font-bold text-orange-400">رفتار انتشار</h2>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="auto1" name="auto_publish_freefire" {{ 'checked' if settings.auto_publish_freefire }} class="h-4 w-4" />
+        <label for="auto1" class="text-sm text-slate-300">انتشار خودکار پست‌های فری‌فایر</label>
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="auto2" name="auto_publish_gold" {{ 'checked' if settings.auto_publish_gold }} class="h-4 w-4" />
+        <label for="auto2" class="text-sm text-slate-300">انتشار خودکار پست‌های قیمت طلا</label>
+      </div>
+      <label class="block space-y-1">
+        <span class="text-sm text-slate-300">حداقل فاصله زمانی بین دو پست (ثانیه)</span>
+        <input type="number" min="0" name="min_post_interval_seconds" value="{{ settings.min_post_interval_seconds }}"
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+      </label>
+      <label class="block space-y-1">
+        <span class="text-sm text-slate-300">کلمات ممنوعه (هر خط یا با کاما جدا شود)</span>
+        <textarea name="blacklist_keywords" rows="3" placeholder="تبلیغ، ریپورت، فروش آیدی"
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500">{{ settings.blacklist_keywords or '' }}</textarea>
+      </label>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-sm font-bold text-orange-400">دستورالعمل تحلیل Gemini — کانال فری‌فایر</h2>
+      <textarea name="freefire_prompt" rows="8"
+        class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-mono text-white outline-none focus:border-orange-500">{{ settings.freefire_prompt or '' }}</textarea>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-sm font-bold text-orange-400">دستورالعمل تحلیل Gemini — کانال قیمت طلا</h2>
+      <textarea name="gold_prompt" rows="8"
+        class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-mono text-white outline-none focus:border-orange-500">{{ settings.gold_prompt or '' }}</textarea>
+    </section>
+
+    <button type="submit" class="w-full rounded-lg bg-gradient-to-r from-orange-500 to-amber-400 py-3 font-bold text-slate-950 hover:opacity-90">ذخیره تنظیمات</button>
+  </form>
+</div>
+{% endblock %}

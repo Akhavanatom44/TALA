@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ labels.title }}{% endblock %}
+{% block content %}
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-bold text-white">{{ labels.title }}</h1>
+    <p class="mt-1 text-sm text-slate-400">{{ labels.subtitle }}</p>
+  </div>
+
+  <section class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+    <h2 class="mb-4 text-lg font-bold text-white">کانال مقصد (جایی که پست نهایی منتشر می‌شود)</h2>
+    <div class="mb-6 space-y-3">
+      {% for dest in destinations %}
+      <div class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <p class="font-bold text-white">{{ dest.title or dest.chat_id }}</p>
+          <div class="flex gap-2">
+            <form method="post" action="/admin/channels/{{ purpose }}/destination/{{ dest.id }}/test">
+              <button class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 hover:bg-slate-700">📨 ارسال تست</button>
+            </form>
+            <form method="post" action="/admin/channels/{{ purpose }}/destination/{{ dest.id }}/delete">
+              <button class="rounded-lg border border-rose-900 bg-rose-950/40 px-3 py-2 text-sm text-rose-400 hover:bg-rose-950">حذف</button>
+            </form>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500">شناسه: {{ dest.chat_id }}</p>
+        <p class="mt-1 whitespace-pre-wrap text-xs text-slate-400">فوتر: {{ dest.footer_text or '—' }}</p>
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-500">هنوز کانال مقصدی تنظیم نشده است.</p>
+      {% endfor %}
+    </div>
+
+    <details class="rounded-xl border border-slate-800 p-4">
+      <summary class="cursor-pointer text-sm font-bold text-orange-400">+ افزودن / ویرایش کانال مقصد</summary>
+      <form method="post" action="/admin/channels/{{ purpose }}/destination/save" class="mt-4 grid gap-3 sm:grid-cols-2">
+        <label class="block space-y-1 sm:col-span-1">
+          <span class="text-sm text-slate-300">شناسه یا یوزرنیم کانال (مثال: @mychannel یا -100123456)</span>
+          <input name="chat_id" required class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+        </label>
+        <label class="block space-y-1">
+          <span class="text-sm text-slate-300">عنوان (اختیاری)</span>
+          <input name="title" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+        </label>
+        <label class="block space-y-1 sm:col-span-2">
+          <span class="text-sm text-slate-300">متن فوتر (آیدی/لینک کانال شما)</span>
+          <textarea name="footer_text" rows="2" placeholder="🆔 @YourChannel" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500"></textarea>
+        </label>
+        <label class="block space-y-1">
+          <span class="text-sm text-slate-300">متن دکمه شیشه‌ای (اختیاری)</span>
+          <input name="button_text" placeholder="عضویت در کانال" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+        </label>
+        <label class="block space-y-1">
+          <span class="text-sm text-slate-300">لینک دکمه شیشه‌ای (اختیاری)</span>
+          <input name="button_url" placeholder="https://t.me/YourChannel" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+        </label>
+        <div class="flex items-center gap-2 self-end pb-2">
+          <input type="checkbox" id="dlp" name="disable_link_preview" class="h-4 w-4" />
+          <label for="dlp" class="text-sm text-slate-300">غیرفعال‌سازی پیش‌نمایش لینک</label>
+        </div>
+        <button class="sm:col-span-2 mt-2 rounded-lg bg-gradient-to-r from-orange-500 to-amber-400 py-2.5 font-bold text-slate-950">ذخیره کانال مقصد</button>
+      </form>
+    </details>
+  </section>
+
+  <section class="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+    <h2 class="mb-4 text-lg font-bold text-white">کانال‌های منبع (رصد می‌شوند)</h2>
+    <p class="mb-4 text-xs text-slate-500">⚠️ نکته مهم: ربات را باید به‌عنوان «ادمین» در کانال منبع اضافه کنید. از همان لحظه افزودن، پست‌های بعدی بررسی می‌شوند.</p>
+    <form method="post" action="/admin/channels/{{ purpose }}/source/add" class="mb-6 flex flex-wrap gap-3">
+      <input name="chat_id" required placeholder="@channel_username یا -100123456789" class="flex-1 min-w-[220px] rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+      <input name="title" placeholder="عنوان (اختیاری)" class="flex-1 min-w-[160px] rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-orange-500" />
+      <button class="rounded-lg bg-gradient-to-r from-orange-500 to-amber-400 px-5 py-2 font-bold text-slate-950">افزودن</button>
+    </form>
+
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[640px] text-sm">
+        <thead>
+          <tr class="border-b border-slate-800 text-right text-slate-400">
+            <th class="py-2 pr-2">کانال</th><th class="py-2">وضعیت</th><th class="py-2">دیده‌شده</th><th class="py-2">منتشرشده</th><th class="py-2">آخرین پست</th><th class="py-2">عملیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in sources %}
+          <tr class="border-b border-slate-800/60">
+            <td class="py-2 pr-2">{{ s.title or s.chat_id }}</td>
+            <td class="py-2">
+              <form method="post" action="/admin/channels/{{ purpose }}/source/{{ s.id }}/toggle">
+                <button class="rounded-full px-2 py-1 text-xs {{ 'bg-emerald-500/15 text-emerald-400' if s.active else 'bg-slate-600/20 text-slate-400' }}">{{ 'فعال' if s.active else 'غیرفعال' }}</button>
+              </form>
+            </td>
+            <td class="py-2 text-slate-300">{{ s.total_seen }}</td>
+            <td class="py-2 text-slate-300">{{ s.total_posted }}</td>
+            <td class="py-2 text-slate-500">{{ s.last_message_at or '—' }}</td>
+            <td class="py-2">
+              <form method="post" action="/admin/channels/{{ purpose }}/source/{{ s.id }}/delete">
+                <button class="text-xs text-rose-400 hover:underline">حذف</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="py-6 text-center text-slate-500">هنوز کانال منبعی اضافه نشده است.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

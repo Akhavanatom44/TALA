@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none transition focus:border-orange-500;
+  }
+}
+
+html {
+  color-scheme: dark;
+}

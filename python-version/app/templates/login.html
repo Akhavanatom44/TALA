@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ورود به پنل مدیریت</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen grid place-items-center px-6">
+  <div class="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
+    <div class="mb-6 text-center">
+      <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-400 text-2xl">🤖</div>
+      <h1 class="text-xl font-bold text-white">ورود به پنل مدیریت</h1>
+      <p class="mt-1 text-sm text-slate-400">ربات هوشمند بازنشر فری‌فایر و قیمت طلا — نسخه Python</p>
+    </div>
+    <form method="post" action="/admin/login" class="space-y-4">
+      <div>
+        <label class="mb-1 block text-sm text-slate-300">رمز عبور ادمین</label>
+        <input type="password" name="password" required
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white outline-none focus:border-orange-500"
+          placeholder="••••••••" />
+      </div>
+      {% if error %}
+      <p class="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+        رمز عبور اشتباه است یا ADMIN_PASSWORD تنظیم نشده است.
+      </p>
+      {% endif %}
+      <button type="submit" class="w-full rounded-lg bg-gradient-to-r from-orange-500 to-amber-400 py-2.5 font-semibold text-slate-950 hover:opacity-90">
+        ورود
+      </button>
+    </form>
+  </div>
+</body>
+</html>

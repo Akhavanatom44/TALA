@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}پنل مدیریت ربات{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Vazirmatn', Tahoma, sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <div class="flex min-h-screen">
+    <aside class="hidden md:flex w-64 flex-col border-l border-slate-800 bg-slate-900/60 p-5">
+      <div class="mb-8 flex items-center gap-2 px-1">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 text-lg">🤖</div>
+        <div>
+          <p class="text-sm font-bold text-white">پنل مدیریت ربات</p>
+          <p class="text-xs text-slate-500">Python Edition</p>
+        </div>
+      </div>
+      <nav class="flex flex-1 flex-col gap-1 text-sm">
+        <a href="/admin" class="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800 text-white' if active_nav=='dashboard' else 'text-slate-300' }}">📊 داشبورد</a>
+        <a href="/admin/channels/freefire" class="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800 text-white' if active_nav=='channels_freefire' else 'text-slate-300' }}">🎮 کانال‌های فری‌فایر</a>
+        <a href="/admin/channels/gold" class="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800 text-white' if active_nav=='channels_gold' else 'text-slate-300' }}">🪙 کانال‌های قیمت طلا</a>
+        <a href="/admin/review" class="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800 text-white' if active_nav=='review' else 'text-slate-300' }}">🕓 صف تایید دستی</a>
+        <a href="/admin/logs" class="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800 text-white' if active_nav=='logs' else 'text-slate-300' }}">📜 گزارش‌ها</a>
+        <a href="/admin/settings" class="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-slate-800 {{ 'bg-slate-800 text-white' if active_nav=='settings' else 'text-slate-300' }}">⚙️ تنظیمات</a>
+      </nav>
+      <form method="post" action="/admin/logout">
+        <button class="mt-4 w-full rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800">خروج از حساب</button>
+      </form>
+    </aside>
+
+    <div class="flex-1">
+      <header class="flex items-center justify-between border-b border-slate-800 bg-slate-900/40 px-4 py-3 md:hidden">
+        <p class="font-bold">پنل مدیریت ربات</p>
+        <form method="post" action="/admin/logout">
+          <button class="rounded-lg border border-slate-700 px-3 py-1 text-xs">خروج</button>
+        </form>
+      </header>
+      <nav class="flex gap-1 overflow-x-auto border-b border-slate-800 bg-slate-900/40 px-3 py-2 md:hidden text-xs">
+        <a href="/admin" class="shrink-0 rounded-lg px-3 py-1.5 hover:bg-slate-800">📊 داشبورد</a>
+        <a href="/admin/channels/freefire" class="shrink-0 rounded-lg px-3 py-1.5 hover:bg-slate-800">🎮 فری‌فایر</a>
+        <a href="/admin/channels/gold" class="shrink-0 rounded-lg px-3 py-1.5 hover:bg-slate-800">🪙 طلا</a>
+        <a href="/admin/review" class="shrink-0 rounded-lg px-3 py-1.5 hover:bg-slate-800">🕓 تایید</a>
+        <a href="/admin/logs" class="shrink-0 rounded-lg px-3 py-1.5 hover:bg-slate-800">📜 گزارش</a>
+        <a href="/admin/settings" class="shrink-0 rounded-lg px-3 py-1.5 hover:bg-slate-800">⚙️ تنظیمات</a>
+      </nav>
+      <main class="p-4 md:p-8">
+        {% if ok is defined and ok %}
+          <div class="mb-4 rounded-lg bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">{{ msg }}</div>
+        {% elif ok is defined and ok == '0' %}
+          <div class="mb-4 rounded-lg bg-rose-500/10 px-4 py-3 text-sm text-rose-400">{{ msg }}</div>
+        {% endif %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+</body>
+</html>

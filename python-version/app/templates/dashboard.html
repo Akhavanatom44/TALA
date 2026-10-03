@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}داشبورد{% endblock %}
+{% block content %}
+<div class="space-y-8">
+  <div>
+    <h1 class="text-2xl font-bold text-white">داشبورد</h1>
+    <p class="mt-1 text-sm text-slate-400">وضعیت کلی ربات و آمار فعالیت‌ها</p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <p class="text-sm text-slate-400">وضعیت اتصال ربات</p>
+      <p class="mt-2 text-lg font-bold {{ 'text-emerald-400' if bot_status.connected else 'text-rose-400' }}">
+        {% if bot_status.connected %}✅ متصل (@{{ bot_status.username }}){% else %}❌ متصل نیست — توکن را در تنظیمات وارد کنید{% endif %}
+      </p>
+    </div>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <p class="text-sm text-slate-400">وضعیت وب‌هوک</p>
+      <p class="mt-2 text-lg font-bold {{ 'text-emerald-400' if webhook_status.configured else 'text-rose-400' }}">
+        {% if webhook_status.configured %}✅ فعال{% else %}❌ تنظیم نشده{% endif %}
+      </p>
+      {% if webhook_status.last_error %}<p class="mt-1 text-xs text-rose-400">آخرین خطا: {{ webhook_status.last_error }}</p>{% endif %}
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 text-lg">✅</div>
+      <p class="text-2xl font-bold text-white">{{ posted_count }}</p>
+      <p class="mt-1 text-xs text-slate-400">پست‌های منتشرشده</p>
+    </div>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-slate-500 to-slate-400 text-lg">🚫</div>
+      <p class="text-2xl font-bold text-white">{{ skipped_count }}</p>
+      <p class="mt-1 text-xs text-slate-400">پست‌های نامرتبط</p>
+    </div>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-yellow-400 text-lg">🕓</div>
+      <p class="text-2xl font-bold text-white">{{ pending_count }}</p>
+      <p class="mt-1 text-xs text-slate-400">در انتظار تایید دستی</p>
+    </div>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <div class="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-red-400 text-lg">⚠️</div>
+      <p class="text-2xl font-bold text-white">{{ error_count }}</p>
+      <p class="mt-1 text-xs text-slate-400">خطاها</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <p class="text-sm text-slate-400">کانال‌های منبع فری‌فایر</p>
+      <p class="mt-2 text-2xl font-bold text-white">{{ freefire_source_count }}</p>
+    </div>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <p class="text-sm text-slate-400">کانال‌های منبع قیمت طلا</p>
+      <p class="mt-2 text-2xl font-bold text-white">{{ gold_source_count }}</p>
+    </div>
+    <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <p class="text-sm text-slate-400">کانال‌های مقصد تنظیم‌شده</p>
+      <p class="mt-2 text-2xl font-bold text-white">{{ destination_count }}</p>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+    <h2 class="mb-4 text-lg font-bold text-white">آخرین فعالیت‌ها</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[640px] text-sm">
+        <thead>
+          <tr class="border-b border-slate-800 text-right text-slate-400">
+            <th class="py-2 pr-2">موضوع</th><th class="py-2">وضعیت</th><th class="py-2">دلیل</th><th class="py-2">زمان</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in recent %}
+          <tr class="border-b border-slate-800/60">
+            <td class="py-2 pr-2">{{ '🎮 فری‌فایر' if p.purpose == 'freefire' else '🪙 طلا' }}</td>
+            <td class="py-2"><span class="rounded-full px-2 py-1 text-xs {{ status_labels[p.status][1] }}">{{ status_labels[p.status][0] }}</span></td>
+            <td class="max-w-[260px] truncate py-2 text-slate-400">{{ p.reason or '-' }}</td>
+            <td class="py-2 text-slate-500">{{ p.created_at }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="py-6 text-center text-slate-500">هنوز هیچ پستی ثبت نشده است.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
